@@ -39,7 +39,6 @@ def check_adb_installed():
             print(f"Error: {result.stderr}")
     
     except FileNotFoundError:
-        # ADB not found, prompt for installation
         print("ADB is not installed or not found in PATH.")
         print("Trying to install...")
         required_pkg()
@@ -50,9 +49,6 @@ def check_device():
     try :
         print("checking for connected devices...")
         subprocess.run(['adb','devices'],)
-
-
-
     except:
         print("Device not found. Try reconnecting again..")
         sys.exit(1)
@@ -68,10 +64,6 @@ def package_uninstall():
     global pkg_uninstall
     pkg_uninstall = input("please type the package name you want to uninsatll: ")
     subprocess.run(['adb','shell','pm','uninstall','--user','0',pkg_uninstall])
-
-
-
-
 
 check_adb_installed()
 check_device()
