@@ -11,8 +11,9 @@ GREEN = '\033[92m'
 YELLOW = '\033[93m'
 END = '\033[0m'
 
-def intro():
-    print(f"""{RED}
+class adb():
+    def __init__(self):
+         print(rf"""{RED}
 
           
                             _           _     _   _____       _     _             _            
@@ -39,84 +40,42 @@ def intro():
     
                                               (GitHub)                                
 
-    {END}    """)         
-
-pkg_uninstall = None
-
-def required_pkg():
-
-    print("Installing required packages...")
-    time.sleep(1)
-    distro = subprocess.run(['lsb_release','-is'],stdout=subprocess.PIPE,text=True).stdout.strip().lower()
-    if "ubuntu" in distro or "kali" in distro or "debian" in distro :
-        subprocess.run(['sudo', 'apt', 'update'], check=True)
-        subprocess.run(['sudo', 'apt', 'install', 'adb', '-y'], check=True)
-    
-    elif "arch" in distro or "manjaro" in distro :
-        subprocess.run(['sudo', 'pacman', '-S', 'android-tools', '--noconfirm'], check=True)
-    else:
-        print(f"Unknown or unsupported Linux distribution: {distro}")
-        print("Please install ADB manually.")
-        
-def check_adb_installed():
-
-    try:
-        result = subprocess.run(['adb', 'version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-        if result.returncode == 0:
-            print("ADB is installed.")
-            time.sleep(1)
-    
-        else:
-            print("ADB is installed but there is an issue with the version command.")
-            print(f"Error: {result.stderr}")
-    
-    except FileNotFoundError:
-        print("ADB is not installed or not found in PATH.")
-        print("Trying to install...")
-        required_pkg()
-
-def check_device():
-
-    try :
-        print(f"{GREEN}Checking for connected devices...{END}")
-        {YELLOW}
-        process =subprocess.run(['adb','devices'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
-        {END}
-        if "device" not in process.stdout():
-            print(f"{RED}NO DEVICE FOUND TRY AGAIN..{END}")
+     {END}""")    
+    def adb_device(self):
+        try :
+            print(f"{GREEN}Checking for connected devices...{END}")
+            {YELLOW}
+            process =subprocess.run(['adb','devices'],stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+            {END}
+            if "device" not in process.stdout:
+                print(f"{RED}NO DEVICE FOUND TRY AGAIN..{END}")
+                sys.exit(1)
+        except:
+            print(f"{RED}Device not found. Try reconnecting again..{END}")
             sys.exit(1)
-    except:
-        print(f"{RED}Device not found. Try reconnecting again..{END}")
-        sys.exit(1)
-
-def package_uninstall():
-
-    package=input(f"{GREEN}Type the app you want to uninsatll: {END}")
-    package_list=subprocess.run(['adb','shell','pm','list','packages','|','grep',package],stdout=subprocess.PIPE,text=True).stdout.splitlines()
-    time.sleep(1)
-    print(f"{YELLOW}Printing the package names with {package}{END}")
-    {GREEN}
-    for print_package in package_list :
-        print(print_package)
-    {END}    
-    global pkg_uninstall
-
-    pkg_uninstall = input(f"{YELLOW}Please type the package name you want to uninsatll: {END}")
-    subprocess.run(['adb','shell','pm','uninstall','--user','0',pkg_uninstall])
-
-def github():
-    git=input(f"{GREEN}Wanna visit my GitHub?(y/n):")
-    if git == 'y':
-        webbrowser.open_new("https://github.com/mtm-x")
-    else:
-        subprocess.run(['clear'])
-        print(f"{RED}BYE BYE{END}")
+    def adb_uninstall(self,app_name):
+        self.app_name=app_name
+        package_list=subprocess.run(['adb','shell','pm','list','packages','|','grep',self.app_name],stdout=subprocess.PIPE,text=True).stdout.splitlines()
         time.sleep(1)
-        sys.exit(0)    
+        print(f"{YELLOW}Printing the package names with {self.app_name}{END}")
+        {GREEN}
+        for print_package in package_list :
+            print(print_package)
+        {END}
+        self.package = input(f"{YELLOW}Please type the package name you want to uninsatll: {END}")
+        subprocess.run(['adb','shell','pm','uninstall','--user','0',self.package])
+    def github(self,git):
+        self.git=git
+        if self.git == "y" or "Y":
+            webbrowser.open_new("https://github.com/mtm-x")
+        else:
+            subprocess.run(['clear'])
+            print(f"{RED}BYE BYE{END}")
+            time.sleep(1)
+            sys.exit(0)  
 
-intro()
-check_adb_installed()
-check_device()
-package_uninstall()
-github()
+adbdevice = adb()
+adbdevice.adb_device()
+adbdevice.adb_uninstall(input(f"{GREEN}Type the app you want to uninsatll: {END}"))
+adbdevice.github(input(f"{GREEN}Wanna visit my GitHub?(y/n):"))
+
