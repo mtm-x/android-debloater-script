@@ -18,6 +18,6 @@
 2. Run the script
 
     ```
-    python3 debloater.py
-    
+    wget https://raw.githubusercontent.com/mtm-x/android-debloater-script/master/debloater.py
+    python debloater.py
     ```
